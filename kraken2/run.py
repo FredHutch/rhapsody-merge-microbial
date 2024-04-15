@@ -64,8 +64,24 @@ def main(kraken_output, fastq_1, fastq_2, barcodes_tsv):
     print(f"Single cell table file: {barcodes_tsv}")
 
     # Read in the table of taxonomic classification results
-    tax_long = pd.read_csv(kraken_output, sep="\t", header=None)
-    # FIXME - transform to a dict with read_id as key and tax_id as value
+    tax_long = pd.read_csv(
+        kraken_output,
+        sep="\t",
+        header=None,
+        names=["flag", "read_id", "tax_id"],
+        usecols=[0, 1, 2]
+    )
+    # Transform to a dict with read_id as key and tax_id as value
+    tax_long = (
+        tax_long
+        .query("flag == 'C'")
+        .query("tax_id != 9606")
+        .query("tax_id != 28384")
+        .set_index("read_id")["tax_id"].to_dict()
+    )
+    print("Taxonomic classification results for {} reads".format(len(tax_long)))
+
+    return
 
     # Map each taxonomic classification result to the cell barcode
     tax_wide = map_tax_to_cell(tax_long, fastq_1, fastq_2)
