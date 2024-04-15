@@ -54,14 +54,14 @@ def get_cell_barcode(header1, seq1, header2, seq2):
 @click.argument('kraken_output', type=click.Path(exists=True))
 @click.argument('fastq_1', type=click.Path(exists=True))
 @click.argument('fastq_2', type=click.Path(exists=True))
-@click.argument('single_cell_table', type=click.Path(exists=True))
-def main(kraken_output, fastq_1, fastq_2, single_cell_table):
+@click.argument('barcodes_tsv', type=click.Path(exists=True))
+def main(kraken_output, fastq_1, fastq_2, barcodes_tsv):
 
     # Example usage:
     print(f"Kraken output file: {kraken_output}")
     print(f"FASTQ 1 file: {fastq_1}")
     print(f"FASTQ 2 file: {fastq_2}")
-    print(f"Single cell table file: {single_cell_table}")
+    print(f"Single cell table file: {barcodes_tsv}")
 
     # Read in the table of taxonomic classification results
     tax_long = pd.read_csv(kraken_output, sep="\t", header=None)
