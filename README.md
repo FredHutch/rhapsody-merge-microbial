@@ -13,3 +13,7 @@ After single-cell sequencing data has been generated, the raw sequencing reads c
 using existing tools for taxonomic classification, such as Kraken2.
 Any such tool which provided a per-read classification can be used.
 The code in this repository may be used to merge the taxonomic classification results with the BD Rhapsody outputs.
+
+## Organization
+
+Each folder contains a tool used for merging the BD Rhapsody outputs with the results from a particular taxonomic classification tool.
