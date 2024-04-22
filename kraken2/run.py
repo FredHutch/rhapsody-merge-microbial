@@ -40,6 +40,10 @@ def map_tax_to_cell(tax_long: dict, bam: str):
             # Add the cell barcode to the taxonomic classification table
             cb[read.query_name, "cell_barcode"] = cell_barcode
 
+            if len(cb) >= 10:
+                print("FIXME -- stopping the BAM parsing early")
+                break
+
     cb = pd.Series(cb)
 
     print(f"Found cell barcodes for {cb.shape[0]:,} reads")
