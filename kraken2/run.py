@@ -38,7 +38,7 @@ def map_tax_to_cell(tax_long: dict, bam: str):
             cell_barcode = get_cell_barcode(read)
 
             # Add the cell barcode to the taxonomic classification table
-            cb[read.query_name, "cell_barcode"] = cell_barcode
+            cb[read.query_name] = cell_barcode
 
             if len(cb) >= 10:
                 print("FIXME -- stopping the BAM parsing early")
@@ -47,14 +47,22 @@ def map_tax_to_cell(tax_long: dict, bam: str):
     print(f"Found cell barcodes for {len(cb):,} reads")
 
     # Make a wide DataFrame with CB as the index and tax_id as the columns
-    return pd.DataFrame(dict(
+    tax_wide = pd.DataFrame(dict(
         cb=cb,
         tax=tax_long
-    )).pivot_table(
+    ))
+    
+    print(tax_wide)
+    
+    tax_wide = tax_wide.pivot_table(
         index="cb",
         columns="tax",
         aggfunc=len
     )
+
+    print(tax_wide)
+
+    return tax_wide
 
 
 def get_cell_barcode(read: pysam.AlignedSegment):
