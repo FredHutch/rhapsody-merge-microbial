@@ -11,7 +11,8 @@ def parse_fastq(fastq):
         header = None
         for i, line in enumerate(f):
             if i % 4 == 0:
-                header = line.strip()
+                assert line.startswith("@"), f"Unexpected header line: {line}"
+                header = line[1:].strip().split(" ")[0]
             elif i % 4 == 1:
                 yield header, line.strip()
             else:
@@ -52,46 +53,46 @@ def get_cell_barcode(header1, seq1, header2, seq2):
 
 @click.command()
 @click.argument('kraken_output', type=click.Path(exists=True))
-@click.argument('fastq_1', type=click.Path(exists=True))
-@click.argument('fastq_2', type=click.Path(exists=True))
 @click.argument('barcodes_tsv', type=click.Path(exists=True))
-def main(kraken_output, fastq_1, fastq_2, barcodes_tsv):
+@click.argument('bam', type=click.Path(exists=True))
+def main(kraken_output, barcodes_tsv, bam):
 
     # Example usage:
     print(f"Kraken output file: {kraken_output}")
-    print(f"FASTQ 1 file: {fastq_1}")
-    print(f"FASTQ 2 file: {fastq_2}")
     print(f"Single cell table file: {barcodes_tsv}")
+    print(f"BAM file: {bam}")
 
-    # Read in the table of taxonomic classification results
-    # Transform to a dict with read_id as key and tax_id as value
-    tax_long = pd.concat([
-        (
-            df
-            .query("flag == 'C'")
-            .query("tax_id != 9606")
-            .query("tax_id != 28384")
-        )
-        for df in pd.read_csv(
-            kraken_output,
-            sep="\t",
-            header=None,
-            names=["flag", "read_id", "tax_id"],
-            usecols=[0, 1, 2],
-            iterator=True,
-            chunksize=10000
-        )
-    ]).set_index("read_id")["tax_id"].to_dict()
-    print(f"Taxonomic classification results for {len(tax_long):,} reads")
-    print(pd.Series(tax_long).value_counts().head(10))
+    # # Read in the table of taxonomic classification results
+    # # Transform to a dict with read_id as key and tax_id as value
+    # tax_long = pd.concat([
+    #     (
+    #         df
+    #         .query("flag == 'C'")
+    #         .query("tax_id != 1")
+    #         .query("tax_id != 2")
+    #         .query("tax_id != 9606")
+    #         .query("tax_id != 28384")
+    #         .query("tax_id != 131567")
+    #     )
+    #     for df in pd.read_csv(
+    #         kraken_output,
+    #         sep="\t",
+    #         header=None,
+    #         names=["flag", "read_id", "tax_id"],
+    #         usecols=[0, 1, 2],
+    #         iterator=True,
+    #         chunksize=10000
+    #     )
+    # ]).set_index("read_id")["tax_id"].to_dict()
+    # print(f"Taxonomic classification results for {len(tax_long):,} reads")
+    # print("Top hits:")
+    # print(pd.Series(tax_long).value_counts().head(10))
 
-    return
+    # # Map each taxonomic classification result to the cell barcode
+    # tax_wide = map_tax_to_cell(tax_long, fastq_1, fastq_2)
 
-    # Map each taxonomic classification result to the cell barcode
-    tax_wide = map_tax_to_cell(tax_long, fastq_1, fastq_2)
-
-    # Merge the table with the single cell table
-    # FIXME
+    # # Merge the table with the single cell table
+    # # FIXME
 
 
 if __name__ == '__main__':
