@@ -104,7 +104,7 @@ def make_tax_summary(tax_wide: pd.DataFrame):
     tax = NCBITaxonomy('ncbi_taxonomy')
     return (
         pd.DataFrame([
-            tax.summary(int(tax_id))
+            tax.summary(str(tax_id))
             for tax_id in tax_wide.columns
         ])
         .set_index("tax_id")
