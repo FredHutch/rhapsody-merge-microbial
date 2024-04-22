@@ -43,10 +43,6 @@ def map_tax_to_cell(tax_long: dict, bam: str):
             # Add the cell barcode to the taxonomic classification table
             cb[read.query_name] = cell_barcode
 
-            if len(cb) >= 10:
-                print("FIXME -- stopping the BAM parsing early")
-                break
-
     print(f"Found cell barcodes for {len(cb):,} reads")
 
     # Make a wide DataFrame with CB as the index and tax_id as the columns
@@ -87,8 +83,7 @@ def get_tax_long(kraken_output):
             names=["flag", "read_id", "tax_id"],
             usecols=[0, 1, 2],
             iterator=True,
-            chunksize=10000,
-            nrows=10000 # FIXME
+            chunksize=1000,
         )
     ]).set_index("read_id")["tax_id"].to_dict()
     print(f"Taxonomic classification results for {len(tax_long):,} reads")
