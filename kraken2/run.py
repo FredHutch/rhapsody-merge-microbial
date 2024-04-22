@@ -71,7 +71,8 @@ def get_tax_long(kraken_output):
             names=["flag", "read_id", "tax_id"],
             usecols=[0, 1, 2],
             iterator=True,
-            chunksize=10000
+            chunksize=10000,
+            nrows=10000
         )
     ]).set_index("read_id")["tax_id"].to_dict()
     print(f"Taxonomic classification results for {len(tax_long):,} reads")
