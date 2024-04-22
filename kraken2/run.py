@@ -7,7 +7,6 @@ import click
 import pysam
 import os
 from functools import lru_cache
-from collections import defaultdict
 import logging
 
 
@@ -89,7 +88,7 @@ def get_tax_long(kraken_output):
             usecols=[0, 1, 2],
             iterator=True,
             chunksize=10000,
-            nrows=10000
+            nrows=10000 # FIXME
         )
     ]).set_index("read_id")["tax_id"].to_dict()
     print(f"Taxonomic classification results for {len(tax_long):,} reads")
@@ -292,6 +291,7 @@ def main(kraken_output, bam, output_prefix):
 
     # Make a summary for each taxon which includes the name, lineage, and total reads
     tax_summary = make_tax_summary(tax_wide)
+    tax_summary.to_csv(f"{output_prefix}.taxonomy_information.csv")
 
 
 if __name__ == '__main__':
