@@ -104,7 +104,7 @@ def make_tax_summary(tax_wide: pd.DataFrame):
     tax = NCBITaxonomy('ncbi_taxonomy')
     return (
         pd.DataFrame([
-            tax.summary(tax_id)
+            tax.summary(int(tax_id))
             for tax_id in tax_wide.columns
         ])
         .set_index("tax_id")
@@ -167,15 +167,15 @@ class NCBITaxonomy():
         )
 
     def info(self, taxid):
-        assert taxid in self.tax
+        assert taxid in self.tax, "Tax ID not found: {}".format(taxid)
         return self.tax[taxid]
 
     def name(self, taxid):
-        assert taxid in self.tax
+        assert taxid in self.tax, "Tax ID not found: {}".format(taxid)
         return self.tax[taxid]['scientific name']
 
     def rank(self, taxid):
-        assert taxid in self.tax
+        assert taxid in self.tax, "Tax ID not found: {}".format(taxid)
         return self.tax[taxid]['rank']
 
     def path_to_root(self, taxid):
