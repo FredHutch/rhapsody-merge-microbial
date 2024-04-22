@@ -44,9 +44,17 @@ def map_tax_to_cell(tax_long: dict, bam: str):
                 print("FIXME -- stopping the BAM parsing early")
                 break
 
-    cb = pd.Series(cb)
+    print(f"Found cell barcodes for {len(cb):,} reads")
 
-    print(f"Found cell barcodes for {cb.shape[0]:,} reads")
+    # Make a wide DataFrame with CB as the index and tax_id as the columns
+    return pd.DataFrame(dict(
+        cb=cb,
+        tax=tax_long
+    )).pivot_table(
+        index="cb",
+        columns="tax",
+        aggfunc=len
+    )
 
 
 def get_cell_barcode(read: pysam.AlignedSegment):
@@ -100,6 +108,8 @@ def main(kraken_output, barcodes_tsv, bam):
 
     # Map each read ID to the cell barcode
     tax_wide = map_tax_to_cell(tax_long, bam)
+
+    print(tax_wide)
 
     # # Merge the table with the single cell table
     # # FIXME
