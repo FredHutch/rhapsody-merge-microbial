@@ -20,12 +20,9 @@ def parse_fastq(fastq):
                 pass
 
 
-def map_tax_to_cell(tax_long: pd.DataFrame, bam: str):
+def map_tax_to_cell(tax_long: dict, bam: str):
 
-    # Make a lookup set with the read IDs which have been classified
-    classified_reads = set(tax_long.index)
-
-    print(f"Searching for cell barcodes for {len(classified_reads):,} reads in {bam}")
+    print(f"Searching for cell barcodes for {len(tax_long):,} reads in {bam}")
 
     # Make a dict with the cell barcode for each read ID
     cb = {}
@@ -34,7 +31,7 @@ def map_tax_to_cell(tax_long: pd.DataFrame, bam: str):
     with pysam.AlignmentFile(bam, "rb") as f:
         for read in f:
             # Skip reads which have not been classified
-            if read.query_name not in classified_reads:
+            if read.query_name not in tax_long:
                 continue
 
             # Extract the cell barcode from the read
