@@ -156,10 +156,10 @@ class NCBITaxonomy():
 
     def summary(self, taxid):
         return dict(
-            tax_id=taxid,
+            tax_id=int(taxid),
             name=self.name(taxid),
             rank=self.rank(taxid),
-            lineage=";".join([
+            lineage="/".join([
                 self.name(taxid)
                 for taxid in self.path_to_root(taxid)[::-1]
             ])
