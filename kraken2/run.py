@@ -37,8 +37,12 @@ def map_tax_to_cell(tax_long: dict, bam: str):
             if read.query_name not in tax_long:
                 continue
 
+            # Skip reads which were not assigned to cells
+            if read.get_tag("CN") != "T":
+                continue
+
             # Extract the cell barcode from the read
-            cell_barcode = get_cell_barcode(read)
+            cell_barcode = read.get_tag("CB")
 
             # Add the cell barcode to the taxonomic classification table
             cb[read.query_name] = cell_barcode
@@ -58,11 +62,6 @@ def map_tax_to_cell(tax_long: dict, bam: str):
     )
 
     return tax_wide
-
-
-def get_cell_barcode(read: pysam.AlignedSegment):
-    """Get the cell barcode for a given pair of reads."""
-    return read.get_tag("CB")
 
 
 def get_tax_long(kraken_output):
