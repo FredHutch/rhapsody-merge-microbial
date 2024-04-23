@@ -38,7 +38,7 @@ def map_tax_to_cell(tax_long: dict, bam: str):
                 continue
 
             # Skip reads which were not assigned to cells
-            if read.get_tag("CN") != "T":
+            if read.get_tag("CN", "X") != "T":
                 continue
 
             # Extract the cell barcode from the read
